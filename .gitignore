@@ -1,0 +1,17 @@
+db.sqlite3
+.DS_Store
+settings_local.py
+*.pyc
+__pycache__/
+__pycache__/*
+__pycache__/*.pyc
+.idea/
+media/
+npm-debug.log*
+.env
+.tern-port
+redis.db*
+ghostdriver.log
+package-lock.json
+static/
+logs/
