@@ -51,4 +51,4 @@ def coinbase_callback(request):
     except:
         logger.exception('Err in notification handler')
 
-    return Response('OK')
+    return Response('ERR', status.HTTP_501_NOT_IMPLEMENTED)
