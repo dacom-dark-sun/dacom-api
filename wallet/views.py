@@ -27,7 +27,9 @@ class IcoWalletViewSet(viewsets.ModelViewSet):
 @decorators.api_view(['POST'])
 @decorators.permission_classes([AllowAny])
 def coinbase_callback(request):
-    signature = request.META.get('HTTP_CB-SIGNATURE', '')
+    from pprint import pformat
+    logger.info('new hook meta: \n %s' % pformat(request.META))
+    signature = request.META.get(['CB-SIGNATURE'], '')
 
     if not coin_base.verify_callback(request.body, signature):
         logger.warning('Hook not validated! \n %s' % request.body)
