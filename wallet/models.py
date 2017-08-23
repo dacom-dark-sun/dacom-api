@@ -54,6 +54,7 @@ class Transaction(models.Model):
     wallet = models.ForeignKey(Wallet, null=True, related_name='transactions')
     processed_at = models.DateTimeField(null=True, auto_now_add=True)
     hash = models.CharField(max_length=200, null=True, unique=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
     transferred = models.BooleanField(default=False)
     sys_message = models.TextField(null=True)
     amount = models.DecimalField(

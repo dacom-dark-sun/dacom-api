@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from dacom_gateway.settings import DACOM_COMMON_BCT_ADDRESS
+from dacom_gateway.settings import DACOM_COMMON_BCT_ADDRESS, TRANSACTION_FEES
 from wallet.models import Transaction, Wallet
 from wallet.coin_base import NotificationError, coin_base
 
@@ -39,17 +39,21 @@ def new_payment(data):
 
     # Transfer money to common address
     try:
+        fee = TRANSACTION_FEES[data['additional_data']['amount']['currency']]
+        amount = tr.amount - fee
+
         coin_base.send_money(
-            data['account']['id'],  # Account from. (current)
+            data['account']['id'],
             to=DACOM_COMMON_BCT_ADDRESS,
-            amount=data['additional_data']['amount']['amount'],
+            amount=amount,
+            fee=fee,
             currency=data['additional_data']['amount']['currency'])
 
         tr.transferred = True
         tr.save()
     except Exception as e:
         logger.critical('TO COMMON -> {} hash: {}'.format(e.message, tr.hash))
-        return None
+        raise e
 
     logger.info('Transaction completed: {}({}): {}'.format(
         data['additional_data']['amount']['amount'],

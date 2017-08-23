@@ -161,6 +161,9 @@ known_chains['DACom'] = {
 
 DACOM_NODE_WSS = 'ws://5.196.225.197:11011'
 
+TRANSACTION_FEES = {
+    'BTC': 0.0005
+}
 
 
 LOGGING = {
