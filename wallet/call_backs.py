@@ -19,11 +19,22 @@ def new_payment(data):
                         data['additional_data']['hash']))
         raise NotificationError
 
-    tr = Transaction.objects.create(
-        wallet=wallet,
+    tr, _ = Transaction.objects.get_or_create(
         hash=data['additional_data']['hash'],
-        amount=data['additional_data']['amount']['amount']
+        defaults={
+            'wallet': wallet,
+            'amount': data['additional_data']['amount']['amount']
+        }
     )
+
+    # TODO Implement for another currency
+    # Bitcoin
+    if tr.amount < 0.0001:
+        logger.warning(
+            f'Amount less then minimum! {tr.amount}({tr.wallet.currency})'
+        )
+
+        return None
 
     # Transfer money to common address
     try:
@@ -31,8 +42,10 @@ def new_payment(data):
             data['account']['id'],  # Account from. (current)
             to=DACOM_COMMON_BCT_ADDRESS,
             amount=data['additional_data']['amount']['amount'],
-            currency=data['additional_data']['amount']['currency'],  # Currency
-        )
+            currency=data['additional_data']['amount']['currency'])
+
+        tr.transferred = True
+        tr.save()
     except Exception as e:
         logger.critical('TO COMMON -> {} hash: {}'.format(e.message, tr.hash))
         return None
@@ -44,6 +57,7 @@ def new_payment(data):
     )
 
     handle_transaction(tr)
+
 
 
 def handle_transaction(tr):
