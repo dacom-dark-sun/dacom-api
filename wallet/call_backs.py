@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -19,11 +20,11 @@ def new_payment(data):
                         data['additional_data']['hash']))
         raise NotificationError
 
-    tr, _ = Transaction.objects.get_or_create(
+    tr, _ = Transaction.objects.update_or_create(
         hash=data['additional_data']['hash'],
         defaults={
             'wallet': wallet,
-            'amount': data['additional_data']['amount']['amount']
+            'amount': Decimal(data['additional_data']['amount']['amount'])
         }
     )
 
